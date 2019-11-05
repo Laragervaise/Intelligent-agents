@@ -2,4 +2,4 @@
 
 Constraint Satisfaction Problem using a Stochastic Local Search algorithm
 
-to run : centralized.xml centralized-main
+Argument to run : config/centralized.xml centralized-main
