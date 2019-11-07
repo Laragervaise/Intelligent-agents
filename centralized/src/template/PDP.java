@@ -15,8 +15,8 @@ public class PDP {
 	
 	public final static boolean RAND_VEHICLE = true;
 	
-	public static final double NEW_PLAN_PROB = 0.4;  /////////a tester entre 0.3 et 0.5
-	private static final int MAX_ITER = 10; /////a tester, "10000 or more" dans la donnee
+	public static final double NEW_PLAN_PROB = 0.35;
+	private static final int MAX_ITER = 1000;
 	
 	private List<Vehicle> vehicles;
 	private TaskSet tasks;
@@ -76,7 +76,7 @@ public class PDP {
 				this.minCost = minCost;
 			}
 		// keep the current plan
-		} else if (num < 100-prop) {
+		} else if (num < 2*prop) {
 			returnPlan = oldPlan;
 		// choose a random plan across the neighboring plans
 		} else { 
