@@ -13,9 +13,7 @@ import logist.task.TaskSet;
 
 public class PDP {
 	
-	public final static boolean RAND_VEHICLE = true;
-	
-	public static final double NEW_PLAN_PROB = 0.35;
+	public static final double NEW_PLAN_PROB = 0.8;
 	private static final int MAX_ITER = 1000;
 	
 	private List<Vehicle> vehicles;
@@ -65,8 +63,7 @@ public class PDP {
 		Random random = new Random();
 		int num = random.nextInt(100);
 		
-		
-		// decide which plan to use according to the number
+		// decide which plan to use according to this random number
 		
 		// choose the cheapest neighboring plan
 		if (num < prop) {
@@ -75,13 +72,11 @@ public class PDP {
 				this.bestPlan = returnPlan;
 				this.minCost = minCost;
 			}
-		// keep the current plan
-		} else if (num < 2*prop) {
-			returnPlan = oldPlan;
 		// choose a random plan across the neighboring plans
 		} else { 
 			returnPlan = candidatePlans.get(random.nextInt(candidatePlans.size()));
 		}
+		
 		return returnPlan;
 	}
 
@@ -135,7 +130,7 @@ public class PDP {
 	
 	private ArrayList<CentralizedPlan> ChooseNeighbours(CentralizedPlan oldPlan) {
 		ArrayList<CentralizedPlan> candidatePlans = new ArrayList<CentralizedPlan>();
-		
+
 		// go across all vehicles
 		for (Vehicle vehicle1 : vehicles) {
 			if (oldPlan.getNextStates() != null) {
@@ -147,7 +142,7 @@ public class PDP {
 						// go across all states of vehicle1 if it exists
 						if (vehicle1States != null && vehicle1States.size() > 0) {
 							for (int i = 0; i < oldPlan.getNextStates().get(vehicle1).size(); i++) {
-								
+
 								// get the state we want to move to another vehicle
 								State exchangeState = oldPlan.getNextStates().get(vehicle1).get(0);
 
@@ -167,61 +162,32 @@ public class PDP {
 								}
 							}
 						}
-						
-						
-						if (!RAND_VEHICLE) {
-							if (vehicle1States != null) {
-								int vehicle1StatesNum = vehicle1States.size();
-								if (vehicle1StatesNum > 1) {
-									for (int stateId = 0 ; stateId < vehicle1StatesNum ; stateId++) {
-
-										// if it's a state where the task has to be picked up
-										if (vehicle1States.get(stateId).isPickup()) {
-
-											// create a new list of plans by reversing the vehicle1 tasks
-											List<CentralizedPlan> planList = changeTaskOrder(oldPlan, vehicle1, stateId);
-
-											// add the new plans to our list of candidate plans if they don't violate our constraints
-											for (CentralizedPlan plan : planList) {
-												if (!violatesConstraints(plan)) {
-													candidatePlans.add(plan);
-												}
-											}
-										}
-									}
-								}
-							}
-						}
 					}
 				}
 			}
 		}	
-		
-		if (RAND_VEHICLE) {
-		
-			Random random = new Random();
-			int randomVehicleNum = random.nextInt(vehicles.size());
-			Vehicle randomVehicle = vehicles.get(randomVehicleNum);
-			LinkedList<State> randomVehicleStates = oldPlan.getNextStates().get(randomVehicle);
 
-			if (randomVehicleStates != null) {
+		Random random = new Random();
+		int randomVehicleNum = random.nextInt(vehicles.size());
+		Vehicle randomVehicle = vehicles.get(randomVehicleNum);
+		LinkedList<State> randomVehicleStates = oldPlan.getNextStates().get(randomVehicle);
 
-				int length = randomVehicleStates.size();
+		if (randomVehicleStates != null) {
+			int length = randomVehicleStates.size();
 
-				// if the vehicle has multiple tasks
-				if (length > 2) {
-					for (int stateId = 0; stateId < length; stateId++) {
-						// if it's a state where the task has to be picked up
-						if (randomVehicleStates.get(stateId).isPickup()) {
+			// if the vehicle has multiple tasks
+			if (length > 2) {
+				for (int stateId = 0; stateId < length; stateId++) {
+					// if it's a state where the task has to be picked up
+					if (randomVehicleStates.get(stateId).isPickup()) {
 
-							// create a new list of plans by reversing the vehicle1 tasks
-							List<CentralizedPlan> planList = changeTaskOrder(oldPlan, randomVehicle, stateId);
+						// create a new list of plans by reversing the vehicle1 tasks
+						List<CentralizedPlan> planList = changeTaskOrder(oldPlan, randomVehicle, stateId);
 
-							for (CentralizedPlan plan : planList) {
-								// add the new plans to our list of candidate plans if they don't violate our constraints
-								if (!violatesConstraints(plan)) {
-									candidatePlans.add(plan);
-								}
+						for (CentralizedPlan plan : planList) {
+							// add the new plans to our list of candidate plans if they don't violate our constraints
+							if (!violatesConstraints(plan)) {
+								candidatePlans.add(plan);
 							}
 						}
 					}
