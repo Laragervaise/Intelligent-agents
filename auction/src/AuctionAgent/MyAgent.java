@@ -65,8 +65,6 @@ public class MyAgent implements AuctionBehavior {
 	private double bidAboutPositionMin = 0.9;
 	private double bidAboutPositionMax = 1.1;
 
-	private double probability[][];
-
 	@Override
 	public void setup(Topology topology, TaskDistribution distribution, Agent agent) {
 
@@ -110,35 +108,6 @@ public class MyAgent implements AuctionBehavior {
 
 		this.myPlan = new PDPlan(vehiclesList);
 		this.oppPlan = new PDPlan(oppVehicles);
-		
-		probability = new double[topology.size()][topology.size()];
-		initPro();
-	}
-	
-	private void initPro() {
-		// define the probabilities
-		
-		int max = 0;
-		int min = Integer.MAX_VALUE;
-		int[][] cityEdge = new int[topology.size()][topology.size()];
-		
-		for (City city1 : topology.cities()) {
-			for (City city2 : topology.cities()) {
-				cityEdge[city1.id][city2.id] = city1.neighbors().size() * city2.neighbors().size();
-				if (cityEdge[city1.id][city2.id] > max) {
-					max = cityEdge[city1.id][city2.id];
-				} else if (cityEdge[city1.id][city2.id] < min) {
-					min = cityEdge[city1.id][city2.id];
-				}
-			}
-		}
-	
-		for (City city1 : topology.cities()) {
-			for (City city2 : topology.cities()) {
-				probability[city1.id][city2.id] = (cityEdge[city1.id][city2.id] - min) * 
-						(bidAboutPositionMax - bidAboutPositionMin) / (max - min) + bidAboutPositionMin;
-			}
-		}
 	}
 
 	@Override
