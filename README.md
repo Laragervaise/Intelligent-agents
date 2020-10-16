@@ -1,2 +1,2 @@
 # intelligent-agents
-Pickup and delivery problem
+Different systems using agents for a pickup and delivery problem
